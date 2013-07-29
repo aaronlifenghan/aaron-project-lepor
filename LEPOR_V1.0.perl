@@ -8,8 +8,8 @@
 ##    Please cite paper below if you use the metric or source code in your research work                                                                                           #####
 ##    "LEPOR: A Robust Evaluation Metric for Machine Translation with Augmented Factors". 2012. Aaron Li-Feng Han, Derek F. Wong and Lidia S. Chao. Proceedings of the             #####
 ##    24th International Conference on Computational Linguistics (COLING 2012): Posters, pages 441–450, Mumbai, December 2012. Association for Computational LinguisticsDecember   #####
-##    Source code website: https://code.google.com/p/aaron-project-lepor/   online paper: http://aclweb.org/anthology-new/C/C12/C12-2044.pdf                                       #####
-##                                                                                                                                                                                 #####
+##    Source code website:https://github.com/aaronlifenghan/aaron-project-lepor https://code.google.com/p/aaron-project-lepor/                                                     #####
+##     online paper: http://aclweb.org/anthology-new/C/C12/C12-2044.pdf                                                                                                            #####
 ########################################################################################################################################################################################
 ##    How to use this Perl code and how to assign the parameter weights of Precision and Recall:                                                                                   #####
 ##    1. Your system output translation documents and the reference translation document should contain the plain text only, each line containing one sentence.                    #####
@@ -26,7 +26,7 @@ opendir (DIR, "D:\\call Papers\\paper\\AMTA201206.4\\program\\new adjustment cor
 
 closedir (DIR);
 open REF,"<:encoding(utf8)","D:\\call Papers\\paper\\AMTA201206.4\\program\\new adjustment corpora\\cz-en2.7\\segmented2.7_newstest2011-ref.en.txt" or die "can't open reference file\n"; ## this file address puts reference translation document##
-  	$j=0;
+		$j=0;
 		$str1="";
 		@arry_r1=();
 		@arry_ref_length= ();
