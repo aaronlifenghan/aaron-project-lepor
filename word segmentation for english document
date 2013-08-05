@@ -1,0 +1,245 @@
+#!/usr/bin/perl -w  
+########################################################################################################################################################################################
+##    For a detailed description of this evaluation metric and source code, please read:                                                                                           #####
+##    This code is to implement the segmentation of common words and punctuations in english text.                                                                                 #####
+##    This word segmentation framwork is designed by Aaron Li-Feng Han, Derek Fai Wong, and Lidia Sam Chao in University of Macau                                                  #####
+##    This perl code is  written by Aaron Li-Feng Han in university of macau, 2012.03                                                                                              #####
+##    All Copyright (c) preserved by the authors. Corresponding author: Aaron Li-Feng Han < hanlifengaaron@gmail.com >                                                             #####
+##    Please cite paper below if you use the algorithm or source code in your research work                                                                                        #####
+##    "LEPOR: A Robust Evaluation Metric for Machine Translation with Augmented Factors". 2012. Aaron Li-Feng Han, Derek F. Wong and Lidia S. Chao. Proceedings of the             #####
+##    24th International Conference on Computational Linguistics (COLING 2012): Posters, pages 441–450, Mumbai, December 2012. Association for Computational LinguisticsDecember   #####
+##    Source code website:https://github.com/aaronlifenghan/aaron-project-lepor & https://code.google.com/p/aaron-project-lepor/                                                   #####
+##    Online paper: http://aclweb.org/anthology-new/C/C12/C12-2044.pdf                                                                                                             #####
+########################################################################################################################################################################################
+##    How to use this Perl code.                                                                                                                                                   #####
+##    1. Your documents should contain the plain text only.                                                                                                                        #####
+##    2. Put you documents under the address in Line 21, 26, 28 of this Perl code.                                                                                                 #####
+##    3. The document containing segmented context will be shown under the address in Line 30 of this Perl code.                                                                   #####
+##                                                                                                                                                                                 #####
+########################################################################################################################################################################################
+
+opendir (DIR, "D:\\call Papers\\paper\\AMTA201206.4\\program\\new adjustment corpora\\es-en2.7\\output_es-en") || die "can not open f:\\dealfiles!"; ##Put you documents under the address
+@filename=readdir(DIR);
+closedir (DIR);
+foreach $file (@filename)
+  {
+		if(!(-d "D:\\call Papers\\paper\\AMTA201206.4\\program\\new adjustment corpora\\es-en2.7\\output_es-en\\$file")) ##Put you documents under the address
+			{
+				open (TEST, "D:\\call Papers\\paper\\AMTA201206.4\\program\\new adjustment corpora\\es-en2.7\\output_es-en\\$file") || die "can not open file: $!"; ##Put you documents under the address
+
+				open (RESULT,">D:\\call Papers\\paper\\AMTA201206.4\\program\\new adjustment corpora\\es-en2.7\\output_es-en\\segmented2.7_$file.txt") || die "$!"; ##The document containing segmented context will be shown under the address
+				while(<TEST>)                       #### put the system translation into a two dimension array @arrytwo_sys_translation
+					{
+						chomp($_);
+						
+						
+						$_=~ s/(\d) , (\d)/$1,$2/g;   ##delete the space between one number, for example 15 , 000 should be 15,000 ### consider 15, 13, 14 and 20.
+						$_=~ s/(\d) . (\d)/$1.$2/g;    ## for case of 15 . 23## change it into 15.23
+						$_=~ s/(\d) (\d)/$1,$2/g;  ## according to reference, change the 13 000 into 13,000 of the output corpus
+						
+						
+						$_= lc($_);
+						
+						
+						
+						# ################################################### the abbreviation of time
+						# $_=~ s/\ o'clock//g;   ## --at ten o'clock a.m.-- should be equal to --at ten a.m.-- so we should regard these two sequence the same score
+						# $_=~ s/\ sec. / second /g;
+						# $_=~ s/\ hr. / hour /g;
+						
+						# $_=~ s/\ a.m. / in the morning /g;
+						# #$_=~ s/\ A.M. / in the morning /g;
+						# $_=~ s/\ pm / in the afternoon /g;
+						# #$_=~ s/\ PM / in the afternoon /g;
+						# $_=~ s/\ p.m. / in the afternoon /g;
+						# #$_=~ s/\ P.M. / in the afternoon /g;
+						
+						# ################################################some copula and auxiliary abbreviations should be changed into the original word 
+						# $_=~ s/\'re / are /g;
+						# $_=~ s/\'m / am /g;     ## 's is special, see below
+						
+						# $_=~ s/\ don't / do not /g;
+						# $_=~ s/\ didn't / did not /g;
+						# $_=~ s/\ doesn't / does not /g;
+						
+						# $_=~ s/\ wasn't / was not /g;
+						# $_=~ s/\ isn't / is not /g;
+						
+						# $_=~ s/\ aren't / are not /g;
+						# $_=~ s/\ weren't / were not /g;
+						
+						# $_=~ s/\ can't / can not /g;
+						# $_=~ s/\ couldn't / could not /g;
+						
+						# $_=~ s/\ won't / will not /g;
+						# $_=~ s/\ wouldn't / would not /g;
+						
+						# $_=~ s/\'ve / have /g;  ## 'd is special, see below
+						
+						# $_=~ s/\'ll / will /g;
+						
+						# ######################################### the abbreviations of week
+						# $_=~ s/\ mon. / monday /g;
+						# #$_=~ s/\ mon / monday /g;
+						# $_=~ s/\ tue. / tuesday /g;
+						# #$_=~ s/\ tues. / tuesday /g;
+						# #$_=~ s/\ tue / tuesday /g;
+						# $_=~ s/\ wed. / wednesday /g;
+						# $_=~ s/\ thu. / thursday /g;
+						# #$_=~ s/\ thurs. / thursday /g;
+						# #$_=~ s/\ thurs / thursday /g;
+						# #$_=~ s/\ thur. / thursday /g;
+						# #$_=~ s/\ thur / thursday /g;
+						# $_=~ s/\ fri. / friday /g;
+						# #$_=~ s/\ fri / friday /g;
+						# $_=~ s/\ sat. / saturday /g;
+						# $_=~ s/\ sun. / sunday /g;
+						
+						# ################################################## the abbreviations of month
+						# $_=~ s/\ jan. / january /g;
+						# $_=~ s/\ feb. / february /g;
+						# $_=~ s/\ mar. / march /g;
+						# $_=~ s/\ apr. / april /g;
+						# $_=~ s/\ jun. / june /g;
+						# $_=~ s/\ jul. / july /g;
+						# $_=~ s/\ aug. / august /g;
+						# $_=~ s/\ sep. / september /g;
+						# $_=~ s/\ oct. / october /g;
+						# $_=~ s/\ nov. / november /g;
+						# $_=~ s/\ dec. / december /g;
+						
+						# ######################################## the abbreviations of ordinal number
+						# $_=~ s/\ 1th / first /g;
+						# $_=~ s/\ 2nd / decond /g;
+						# $_=~ s/\ 3th / third /g;
+						# $_=~ s/\ 4th / fourth /g;
+						# $_=~ s/\ 5th / fifth /g;
+						# $_=~ s/\ 6th / sixth /g;
+						# $_=~ s/\ 7th / seventh /g;
+						# $_=~ s/\ 8th / eighth /g;
+						# $_=~ s/\ 9th / nineth /g;
+						# $_=~ s/\ 10th / tenth /g;
+						# $_=~ s/\ 20th / twentieth /g;
+						# $_=~ s/\ 30th / thirtieth /g;
+						# $_=~ s/\ 40th / fortieth /g;
+						# $_=~ s/\ 50th / fiftieth /g;
+						# $_=~ s/\ 60th / sixtieth /g;
+						# $_=~ s/\ 70th / seventieth /g;
+						# $_=~ s/\ 80th / eightieth /g;
+						# $_=~ s/\ 90th / ninetieth /g;
+						# $_=~ s/\ 100th / hundredth /g;
+						
+						# ################################## the abbreviations of Unit
+						# $_=~ s/\ g. / gram /g;
+						# $_=~ s/\ kg. / kilogram /g;
+						# $_=~ s/\ t. / ton /g;
+						# $_=~ s/\ lb. / pound /g;
+						# $_=~ s/\ 1ibra / pound /g;
+						
+						# $_=~ s/\ cm. / centimeter /g;
+						# $_=~ s/\ dm. / decimeter /g;
+						# $_=~ s/\ m. / meter /g;
+						# $_=~ s/\ km. / kilometer /g;
+						# $_=~ s/\ in. / inch /g;
+						# $_=~ s/\ ft. / feet /g;
+						
+						# ############################## arabic number should changed all into english 
+						# $_=~ s/\ 1 / one /g;
+						# $_=~ s/\ 2 / two /g;
+						# $_=~ s/\ 3 / three /g;
+						# $_=~ s/\ 4 / four /g;
+						# $_=~ s/\ 5 / five /g;
+						# $_=~ s/\ 6 / six /g;
+						# $_=~ s/\ 7 / seven /g;
+						# $_=~ s/\ 8 / eight /g;
+						# $_=~ s/\ 9 / nine /g;
+						# $_=~ s/\ 10 / ten /g;
+						# $_=~ s/\ 11 / eleven /g;
+						# $_=~ s/\ 12 / twelve /g;
+						# $_=~ s/\ 13 / thirteen /g;
+						# $_=~ s/\ 14 / fourteen /g;
+						# $_=~ s/\ 15 / fifteen /g;
+						# $_=~ s/\ 16 / sixteen /g;
+						# $_=~ s/\ 17 / seventeen /g;
+						# $_=~ s/\ 18 / eighteen /g;
+						# $_=~ s/\ 19 / nineteen /g;
+						# $_=~ s/\ 20 / twenty /g;
+						# $_=~ s/\ 30 / thirty /g;
+						# $_=~ s/\ 40 / fourty /g;
+						# $_=~ s/\ 50 / fifty /g;
+						# $_=~ s/\ 60 / sixty /g;
+						# $_=~ s/\ 70 / seventy /g;
+						# $_=~ s/\ 80 / eighty /g;
+						# $_=~ s/\ 90 / ninety /g;
+						# $_=~ s/\ 100 / one hundred /g;
+						# $_=~ s/\ a handred / one hundred /g;
+						
+						
+						################## some special punctuations in the corpus
+						$_=~ s/\“/"/g;
+						$_=~ s/\”/"/g;
+						$_=~ s/\„/"/g;
+						$_=~ s/\``/"/g;
+						
+						
+						##################################### punctuation should segmented apart from word
+						$_=~ s/\"/ " /g;
+						$_=~ s/\'/ ' /g;
+						$_=~ s/\,/ , /g;
+						#$_=~ s/\./ . /g;
+						$_=~ s/\.../ ... /g;
+						$_=~ s/\-/ /g;
+						
+						$_=~ s/\.$/ ./g;    ##add a space between the end-word and the end-dot
+						
+						$_=~ s/\. "/ . "/g;  ## if the end of sentence is " not dot then we also add space before dot to seperate it from the word
+						
+						
+						
+						$_=~ s/\' s /'s /g; ## --'s-- is one word meaning --of-- or --is--, so put it together 
+						$_=~ s/\' d /'d /g; ## --'d-- is one word meaning --had-- or --would-- or --could--, so put it together 
+						
+						
+						$_=~ s/\?/ ? /g;
+						$_=~ s/\!/ ! /g;    ##########in seg version 3.0 there is no ---! ; and some other as below -------------
+						$_=~ s/\;/ ; /g;
+						$_=~ s/\</ < /g;
+						$_=~ s/\>/ > /g;
+						$_=~ s/\{/ { /g;
+						$_=~ s/\}/ } /g;
+						$_=~ s/\[/ [ /g;
+						$_=~ s/\]/ ] /g;
+						$_=~ s/\&/ & /g;
+						$_=~ s/\$/ \$ /g;
+						$_=~ s/\\/ \\ /g;
+						$_=~ s/\// \/ /g;
+						
+						$_=~ s/\:/ : /g;
+						$_=~ s/\(/ ( /g;
+						$_=~ s/\)/ ) /g;
+						
+						$_=~ s/(\d) , (\d)/$1,$2/g;   ##for the case 15,000 ##after add space around the comma it will be 15 , 000## delete the space between one number into 15,000 
+						$_=~ s/(\d) ,  (\d)/$1 , $2/g;   ## for the case 14, 15 and 20 ##after add space around the comma it will be 14 ,  15## change into 14 , 15
+#						
+						
+						
+						$_=~ s/\s+/ /g;
+						
+						
+						$_=~ s/\ per cent / percent /g;
+						
+						
+						
+						
+						
+						
+						print RESULT $_;
+						print RESULT "\n";
+					}
+				close TEST;
+				close RESULT;
+				
+			}
+	}
+
+
