@@ -12,3 +12,5 @@ the 24th International Conference on Computational Linguistics (COLING 2012): Po
 December 2012. Source code: https://github.com/aaronlifenghan/aaron-project-lepor & 
 https://code.google.com/p/aaron-project-lepor/ Online paper: http://aclweb.org/anthology-new/C/C12/C12-2044.pdf. If 
 you use the LEPOR metric in your researches, please cite the paper.
+
+Contact: hanlifengaaron AT gmail.com
