@@ -18,4 +18,4 @@ The enhanced version of the metrics hLEPOR and nLEPOR are introduced in the pape
 If you use the LEPOR metric in your researches, please cite the paper.
 
 Contact: hanlifengaaron AT gmail DOT com
-Address: Research Building R108, NLP2CT-Lab, University of Macau, Av. Padre Tomás Pereira Taipa, Macau S.A.R, China
+Address: ADAPT Centre, DCU, Dublin, Ireland
