@@ -20,3 +20,24 @@ If you use the LEPOR metric in your researches, please cite the paper.
 Contact: hanlifengaaron AT gmail DOT com
 ----------
 Address: ADAPT Centre, DCU, Dublin, Ireland
+
+-----------
+
+||Citations:||
+
+@inproceedings{han2012lepor,
+  title={LEPOR: A Robust Evaluation Metric for Machine Translation with Augmented Factors},
+  author={Han, Aaron L.-F. and Wong, Derek F. and Chao, Lidia S.},
+  booktitle={Proceedings of the 24th International Conference on Computational Linguistics (COLING 2012)},
+  pages={Posters--441},
+  year={2012},
+  organization={Association for Computational Linguistics}
+}
+
+@inproceedings{han2013description,
+  title={A description of tunable machine translation evaluation systems in WMT13 metrics task},
+  author={Han, Li Feng and Wong, Fai and Chao, Sam and Lu, Yi and He, Liang Ye and Wang, Yi Ming and Zhou, Jia Ji},
+  booktitle={The eighth workshop on statistical machine translation, Aug. 2013, p. 414-421},
+  year={2013}
+}
+
