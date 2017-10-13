@@ -12,7 +12,7 @@
 ##     online paper: http://aclweb.org/anthology-new/C/C12/C12-2044.pdf                                                                                                            #####
 ########################################################################################################################################################################################
 ##    How to use this Perl code and how to assign the parameter weights of Precision and Recall:                                                                                   #####
-##    1. Your system output translation documents and the reference translation document should contain the plain text only, each line containing one sentence.                    #####
+##    1. Your system output translation documents and the reference translation document should contain the plain text only, each line containing one sentence, no empty stentence #####
 ##    2. Put you system output translation documents under the address in Line 24, 52, 54 of this Perl code.                                                                       #####
 ##    3. Put you reference translation document under the address in Line 28 of this Perl code.                                                                                    #####
 ##    4. Tune the Precision and Recall weights of LEPOR by the parameter value of a under the address in Line 163 of this Perl code.                                               #####
@@ -20,12 +20,12 @@
 ##                                                                                                                                                                                 #####
 ########################################################################################################################################################################################
 
-
-opendir (DIR, "D:\\call Papers\\paper\\AMTA201206.4\\program\\new adjustment corpora\\cz-en2.7\\output_cz-en\\segmented_cz-en") || die "can not open f:\\dealfiles!"; ## this file address puts your system output translation documents
+# C:\Users\shede\Desktop\aaron\LEPOR\exp\sysout
+opendir (DIR, "C:\\Users\\shede\\Desktop\\aaron\\LEPOR\\exp\\sysout") || die "can not open f:\\dealfiles!"; ## this file address puts your system output translation documents
 @filename=readdir(DIR);
 
 closedir (DIR);
-open REF,"<:encoding(utf8)","D:\\call Papers\\paper\\AMTA201206.4\\program\\new adjustment corpora\\cz-en2.7\\segmented2.7_newstest2011-ref.en.txt" or die "can't open reference file\n"; ## this file address puts reference translation document##
+open REF,"<:encoding(utf8)","C:\\Users\\shede\\Desktop\\aaron\\LEPOR\\exp\\ref\\ref.txt" or die "can't open reference file\n"; ## this file address puts reference translation document##
 		$j=0;
 		$str1="";
 		@arry_r1=();
@@ -35,7 +35,7 @@ open REF,"<:encoding(utf8)","D:\\call Papers\\paper\\AMTA201206.4\\program\\new 
 		while($str1=<REF>)               #### put the reference translation into a two dimension array @arrytwo_ref_translation
 			{
 				chomp($str1);
-				$str1= lc ($str1);   ### when doing the matching, lower and upper case is concidered the same
+				$str1= lc ($str1);   ### when doing the matching, lower and upper case is concidered the same, case in-sensitive 
 				@arry_r1= split(/\s+/,$str1);
 				$arry_ref_length[$j]=scalar(@arry_r1);             #### @arry_ref_length store the lengths of every sentence(line) of the reference translation.
 				$j++;
@@ -49,10 +49,10 @@ close REF;
 
 foreach $file (@filename)     ## go through all the system output translation documents 
 	{
-		if(!(-d "D:\\call Papers\\paper\\AMTA201206.4\\program\\new adjustment corpora\\cz-en2.7\\output_cz-en\\segmented_cz-en\\$file"))  ## this file address puts your system output translation documents
+		if(!(-d "C:\\Users\\shede\\Desktop\\aaron\\LEPOR\\exp\\sysout\\$file"))  ## this file address puts your system output translation documents
 			{
-				open (TEST,"<:encoding(utf8)","D:\\call Papers\\paper\\AMTA201206.4\\program\\new adjustment corpora\\cz-en2.7\\output_cz-en\\segmented_cz-en\\$file") || die "can not open system output file: $!";
-				open (RESULT,">D:\\call Papers\\paper\\AMTA201206.4\\program\\new adjustment corpora\\cz-en2.7\\output_cz-en\\segmented_cz-en\\LEPOR1P9R_$file.txt") || die "$!";  ## put the evaluation score in this file address
+				open (TEST,"<:encoding(utf8)","C:\\Users\\shede\\Desktop\\aaron\\LEPOR\\exp\\sysout\\$file") || die "can not open system output file: $!";
+				open (RESULT,">:encoding(utf8)","C:\\Users\\shede\\Desktop\\aaron\\LEPOR\\exp\\score\\LEPOR1P9R_$file.txt") || die "$!";  ## put the evaluation score in this file address
 				
 				$i=0;
 				$str0="";
@@ -63,7 +63,7 @@ foreach $file (@filename)     ## go through all the system output translation do
 				while($str0=<TEST>)                       #### put the system output translation into a two dimension array @arrytwo_sys_translation
 					{
 						chomp($str0);
-						$str0= lc ($str0);   ###  system output translation is turned into lowwer case, too
+						$str0= lc ($str0);   ###  system output translation is turned into lowwer case, too; case in-sensitive 
 						@arry_1= split(/\s+/,$str0);
 						$arry_sys_length[$i]=scalar(@arry_1);       #### @arry_sys_length store the lengths of every sentence(line) of the system translation.
 						$i++;
@@ -97,7 +97,7 @@ foreach $file (@filename)     ## go through all the system output translation do
 							}
 					}
 				print RESULT 'length penalty with longer or shorter:',"\n","@LP","\n",$k,"\n";
-				$Mean_LP= 0;
+				$Mean_LP= 0; 
 				for($k=0;$k<$sentence_num;$k++)
 					{
 						$Mean_LP= $Mean_LP+$LP[$k];
@@ -329,10 +329,28 @@ foreach $file (@filename)     ## go through all the system output translation do
 					{
 						for( $j=0; $j<$arry_sys_length[$i]; $j++ )    #### sum the Pos_dif_distance of one sentence,then divided by the lenth of the sentence
 							{
-								$Pos_dif_sum[$i]= $Pos_dif_sum[$i]+$pos_dif[$i][$j];
+							
+								if(($common_num[$i]==$arry_sys_length[$i])and($arry_sys_length[$i]==$arry_ref_length[$i]))   ## if the output match othe reference exactly, then NPD=0 so that PosPenalty=1, i.e. no penalty. added in 20171013th
+									{
+										$Pos_dif_sum[$i]=0;
+									}
+								else
+									{
+										$Pos_dif_sum[$i]= $Pos_dif_sum[$i]+$pos_dif[$i][$j];
+									}
+
 							}
 						if($arry_sys_length[$i]>0)
 							{
+#								for($k=0;$k<$sentence_num;$k++)
+#								{
+#									if(($common_num[$k]==$arry_sys_length[$k])and($arry_sys_length[$k]==$arry_ref_length[$k]))   ## if the output match othe reference exactly, then NPD=0 so that PosPenalty=1, i.e. no penalty
+#										{
+#											$Pos_dif_sum[$k]=0;
+#										}
+#								}
+								
+								
 								$Pos_dif_sum[$i]=$Pos_dif_sum[$i]/$arry_sys_length[$i];
 								$Pos_dif_value[$i]= exp(-$Pos_dif_sum[$i]);   #### calculate the every sentence's value of Pos_dif_value by taking the exp.
 							}
