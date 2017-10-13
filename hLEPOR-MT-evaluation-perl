@@ -12,7 +12,7 @@
 ##    Online paper: http://www.hindawi.com/journals/tswj/                                                                                                                          #####
 ########################################################################################################################################################################################
 ##    How to use this Perl code and how to assign the weights of sub-factors, e.g. Precision, Recall, Length penalty, Position difference penalty, et.                             #####
-##    1. Your system output translation documents and the reference translation document should contain the plain text only, each line containing one sentence.                    #####
+##    1. Your system output translation documents and the reference translation document should contain the plain text only, each line containing one sentence, no empty line.     #####
 ##    2. Put you system output translation documents under the address in Line 23, 53, 55 of this Perl code.                                                                       #####
 ##    3. Put you reference translation document under the address in Line 27 of this Perl code.                                                                                    #####
 ##    4. Tune the alpha:beta(Recall:Precision) weights in Line 176; Tune the HPR:ELP:NPP weights in Line 369-371 of this Perl code.                                                #####
@@ -344,7 +344,18 @@ foreach $file (@filename)
 					{
 						for($j=0;$j<$arry_sys_length[$i];$j++)    #### sum the Pos_dif_distance of one sentence,then divided by the lenth of the sentence
 							{
-								$Pos_dif_sum[$i]= $Pos_dif_sum[$i] + $pos_dif[$i][$j];
+							
+##								$Pos_dif_sum[$i]= $Pos_dif_sum[$i] + $pos_dif[$i][$j]; ## this is original code by simply adding the pos_dif[][], without judging whether the sysout and ref are exact the same sentence.
+
+								if(($common_num[$i]==$arry_sys_length[$i])and($arry_sys_length[$i]==$arry_ref_length[$i]))   ## if the output match othe reference exactly, then NPD=0 so that PosPenalty=1, i.e. no penalty. added in 20171013th
+									{
+										$Pos_dif_sum[$i]=0;
+									}
+								else
+									{
+										$Pos_dif_sum[$i]= $Pos_dif_sum[$i]+$pos_dif[$i][$j];
+									}
+								
 							}
 						if($arry_sys_length[$i]>0)
 							{
